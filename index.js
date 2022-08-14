@@ -1,4 +1,6 @@
 const { ethers, Contract } = require("ethers");
+const player = require("play-sound")((opts = []));
+
 const ETHEREUM_RPC_URL = "https://cloudflare-eth.com/";
 const provider = new ethers.providers.JsonRpcProvider(ETHEREUM_RPC_URL);
 const CONTRACT_ADDRESS = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
@@ -125,7 +127,14 @@ const contract = new Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
 // Note: USDC uses 6 decimal places
 const TRANSFER_TRESHOLD = 100000000000; // 100,000 USDC (in wei)
 
+const playSound = () => {
+  player.play("ding.mp3", function (err) {
+    if (err) throw err;
+  });
+};
+
 const main = async () => {
+  playSound();
   const name = await contract.name();
   console.log(
     `Whale tracker started!\nListening for large transfers on ${name}`
@@ -133,6 +142,7 @@ const main = async () => {
 
   contract.on("Transfer", (from, to, amount, data) => {
     if (amount.toNumber() >= TRANSFER_TRESHOLD) {
+      playSound();
       console.log(
         `New whale transfer for ${name}\nEtherscan: https://etherscan.io/tx/${data.transactionHash}`
       );
