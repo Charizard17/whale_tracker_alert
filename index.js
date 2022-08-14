@@ -122,11 +122,22 @@ const CONTRACT_ABI = [
 
 const contract = new Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
 
+// Note: USDC uses 6 decimal places
+const TRANSFER_TRESHOLD = 100000000000; // 100,000 USDC (in wei)
+
 const main = async () => {
   const name = await contract.name();
   console.log(
     `Whale tracker started!\nListening for large transfers on ${name}`
   );
+
+  contract.on("Transfer", (from, to, amount, data) => {
+    if (amount.toNumber() >= TRANSFER_TRESHOLD) {
+      console.log(
+        `New whale transfer for ${name}\nEtherscan: https://etherscan.io/tx/${data.transactionHash}`
+      );
+    }
+  });
 };
 
 main();
