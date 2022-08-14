@@ -139,7 +139,9 @@ const main = async () => {
   console.log(
     `Whale tracker started!\nListening for large transfers on ${name}`
   );
-
+  // note: not all Erc20 tokens index 'amount'
+  // use this instead of Ethers.js query filters
+  // https://docs.ethers.io/v5/concepts/events/
   contract.on("Transfer", (from, to, amount, data) => {
     if (amount.toNumber() >= TRANSFER_TRESHOLD) {
       playSound();
